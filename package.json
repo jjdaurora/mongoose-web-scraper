@@ -1,0 +1,30 @@
+{
+  "name": "mongoose-web-scraper",
+  "version": "1.0.0",
+  "description": "an app built on mongoose and mongodb ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjdaurora/mongoose-web-scraper.git"
+  },
+  "keywords": [
+    "mongoose"
+  ],
+  "author": "JJ D'Aurora",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jjdaurora/mongoose-web-scraper/issues"
+  },
+  "homepage": "https://github.com/jjdaurora/mongoose-web-scraper#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.2",
+    "express-handlebars": "^3.0.0",
+    "mongoose": "^5.0.9",
+    "request": "^2.83.0"
+  }
+}
