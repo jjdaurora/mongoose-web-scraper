@@ -7,7 +7,7 @@ var cheerio = require("cheerio");
 var handlebars = require("express-handlebars")
 var db = require("./models");
 
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 // Initialize Express
 var app = express();
@@ -25,8 +25,7 @@ app.use(express.static("."));
 
 
 var MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongo ds113749.mlab.com:13749/heroku_drx3l970 -u <dbuser> -p <dbpassword>";
+  process.env.MONGODB_URI || "localhost:27017";
 
 mongoose.Promise = Promise;
 mongoose.connect(MONGODB_URI, {});
