@@ -20,92 +20,118 @@ app.use(logger("dev"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(express.static("public"));
+app.use(express.static("."));
 
 mongoose.Promise = Promise;
 
-mongoose.connect("mongodb://localhost/mongoHeadlines") ;
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
 // Routes
-
-app.get("/scrape", function(req, res) {
+// get routes
+app.get("/getheadlines", function(req, res) {
   // First, we grab the body of the html with request
-  axios.get("http://www.echojs.com/").then(function(response) {
+  axios.get("http://www.theverge.com").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
     // Now, we grab every h2 within an article tag, and do the following:
-    $("article h2").each(function(i, element) {
+    $("h2.c-entry-box--compact__title").each(function(i, element) {
       // Save an empty result object
       var result = {};
       // Add the text and href of every link, and save them as properties of the result object
-      result.title = $(this)
-        .children("a")
-        .text();
-      result.author = $(this)
-        .children("a")
+      result.title = $(element)
+         .children()
+         .text();
+      
+      result.author = $(element)
+        .children()
         .attr("href");
-      // Create a new Article using the `result` object built from scraping
-      db.Headline.create(result)
-        .then(function(dbHeadline) {
 
-          Headline: {
-            title: result
-            author: result
-          }
-          // View the added result in the console
-          console.log(dbHeadline);
-        })
-        // .catch(function(err) {
-        //   // If an error occurred, send it to the client
-        //   return res.json(err);
-        // });
+      // Create a new Article using the `result` object built from scraping
+      db.Headline.find(result).then(function(dbHeadline) {
+        Headline: {
+          title: result
+          author: result
+          saved: result
+        }
+        // View the added result in the console
+        console.log(dbHeadline);
+      });
     });
     // If we were able to successfully scrape and save an Article, send a message to the client
-    res.send("Scrape Complete");
+    db.Headline.find({}, {}, { sort: { '_id' : -1 } }) 
+      .then(function(data) {
+        var headlineData = { Headline: data };
+        res.render("home", headlineData);
+      })
+      .catch(function(err) {
+        res.json(err);
+      });
   });
 });
 
-app.get("/headlines", function(req, res) {
-  db.Headline.find({})
-    .then(function(data) {
-      var headlineData = {
-        Headline: data
-      };
-      res.render("saved", headlineData);
+app.get("/", function(req, res) {
+    db.Headline.find({}, {}, { sort: { _id: -1 } })
+      .then(function(data) {
+        var headlineData = { Headline: data };
+        res.render("home", headlineData);
+      })
+      .catch(function(err) {
+        res.json(err);
+      });
+  });
+
+app.get("/saved", function(req, res) {
+  let id = req.params.id;
+
+  db.Headline.find({ saved: true })
+    .then(function(dbHeadline) {
+      res.render("saved", { Headline: dbHeadline});
     })
     .catch(function(err) {
       res.json(err);
     });
 });
 
-// app.get("/articles/:id", function(req, res) {
-//   let id = req.params.id;
+app.get("/notes/:id", function(req, res) {
+  let id = req.params.id;
 
-//   db.Article.find({ _id: id })
-//     .then(function(dbHeadline) {
-//       res.json(dbHeadline);
-//     })
-//     .catch(function(err) {
-//       res.json(err);
-//     });
-// });
+  db.Note.find({})
+    .then(function(dbNote) {
+      res.render("notes", { Note: dbNote });
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
 
-// app.post("/articles/:id", function(req, res) {
-//   db.Note.create(req.body)
-//     .then(function(dbNote) {
-//       return db.Article.findOneAndUpdate(
-//         { _id: req.params.id },
-//         { note: dbNote._id },
-//         { new: true }
-//       );
-//     })
-//     .then(function(dbHeadline) {
-//       res.json(dbHeadline);
-//     })
-//     .catch(function(err) {
-//       res.json(err);
-//     });
-// });
+// post routes
+app.post("/saved/:id", function(req, res) {
+    db.Headline.findOneAndUpdate(
+        { _id: req.params.id },
+        {$set:{saved: true}}
+      )
+    .then(function(dbHeadline) {
+      res.json(dbHeadline);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+app.post("/delete/:id", function(req, res) {
+  db.Headline.findOneAndUpdate(
+    { _id: req.params.id },
+    { $set: { saved: false } }
+  )
+    .then(function(dbHeadline) {
+      window.location.href("/saved");
+      res.json(dbHeadline);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
 
 // Start the server
 app.listen(PORT, function() {

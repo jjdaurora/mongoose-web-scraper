@@ -1,7 +1,11 @@
  <div id="articles">
     {{#each Headline}}
-        <h2>{{title}}</h2>
-        <li>{{author}}</li>
+    <div data-id="{{_id}}">
+        <h2 class="headline-title">{{title}}</h2>
+        <li class="headline-author">{{author}}</li>
+        <button class="delete-headline-btn">Delete</button>
+        <button class="open-note-btn">Add notes</button>
+    </div>
     {{/each}}
 </div>
 

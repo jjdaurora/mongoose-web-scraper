@@ -2,22 +2,33 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Verge Web Scraper</title>
+    <title>The Verge Web Scraper</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="assets/styles.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="screen" href="../public/assets/styles.css" />
 </head>
 
 <body>
-    <h1>The Verge Web Scraper</h1>
-    <button class="create-note-btn"><a href="/scrape">Scape New Articles</a></button>
-    <button class="delete-note-btn"></button>
-    <div class="wrapper">
-        {{{ body }}}
+    <nav class="navbar navbar-light bg-light">
+        <h1><a class="navbar-brand" href="/">The Verge Web Scraper</a></h1>
+        <button class="scrape-btn">
+            <a href="/getHeadlines">Scrape</a>
+        </button>
+        <button class="find-saved-btn">
+            <a href="/saved">Saved</a>
+        </button>
+    </nav>
+  
+    <div class="container">
+    
+
+            {{{ body }}}
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="assets/app.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="/../../public/assets/app.js"></script>
 </body>
 
 </html>
