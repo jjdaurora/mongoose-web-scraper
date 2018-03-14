@@ -22,13 +22,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static("."));
 
+
+
+var MONGODB_URI =
+  process.env.MONGODB_URI ||
+  "mongo ds113749.mlab.com:13749/heroku_drx3l970 -u <dbuser> -p <dbpassword>";
+
 mongoose.Promise = Promise;
-mongoose.connect(MONGODB_URI, {
-  useMongoClient: true
-});
-
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-
+mongoose.connect(MONGODB_URI, {});
 // Routes
 // get routes
 app.get("/getheadlines", function(req, res) {
