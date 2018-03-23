@@ -22,13 +22,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static("."));
 
-
-
 var MONGODB_URI =
-  process.env.MONGODB_URI || "localhost:27017";
+  process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
+// By default mongoose uses callbacks for async queries, we're setting it to use promises (.then syntax) instead
+// Connect to the Mongo DB
 mongoose.Promise = Promise;
-mongoose.connect(MONGODB_URI, {});
+mongoose.connect(MONGODB_URI, {
+  useMongoClient: true
+});
 // Routes
 // get routes
 app.get("/getheadlines", function(req, res) {
@@ -42,19 +44,19 @@ app.get("/getheadlines", function(req, res) {
       var result = {};
       // Add the text and href of every link, and save them as properties of the result object
       result.title = $(element)
-         .children()
-         .text();
-      
+        .children()
+        .text();
+
       result.author = $(element)
         .children()
         .attr("href");
 
-      // Create a new Article using the `result` object built from scraping
-      db.Headline.find(result).then(function(dbHeadline) {
+      //Create a new Article using the `result` object built from scraping
+      db.Headline.create(result).then(function(dbHeadline) {
         Headline: {
-          title: result
-          author: result
-          saved: result
+          title: result.title
+          author: result.author
+          saved: false
         }
         // View the added result in the console
         console.log(dbHeadline);
@@ -64,6 +66,7 @@ app.get("/getheadlines", function(req, res) {
     db.Headline.find({}, {}, { sort: { '_id' : -1 } }) 
       .then(function(data) {
         var headlineData = { Headline: data };
+        console.log(headlineData);
         res.render("home", headlineData);
       })
       .catch(function(err) {
